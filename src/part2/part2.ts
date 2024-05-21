@@ -39,4 +39,13 @@ export type WordTree = {
   children: WordTree[];
 };
 
-export const treeToSentence: undefined = undefined;
+const preorderTraversal = (node: WordTree | null): string[] =>
+  node
+      ? [node.root, " ", ...R.chain(preorderTraversal, node.children)]
+       : [];
+
+
+export const treeToSentence: (node: WordTree)=>string= (node)=>{
+  const arr= preorderTraversal(node);
+  return R.init(R.reduce((acc,cur)=> acc+cur,"",arr));
+}  
