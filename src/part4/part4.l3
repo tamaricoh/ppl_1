@@ -1,16 +1,61 @@
 #lang racket/base
 
+; Signature: append(l1,l2)
+; Type:[List(T1)*List(T2) -> List(T1,T2)]
+; Purpose: Append two lists together
+; Pre-conditions:l1 and l2 are lists 
+; Tests:(append '(1 2 3) '(4 5 6)) ; Expected: '(1 2 3 4 5 6)
+; (append '() '(4 5 6))      ; Expected: '(4 5 6)
+; (append '(1 2 3) '())      ; Expected: '(1 2 3)
 (define append
     (lambda (l1 l2)
-    @todo
+    (if (eq? l1 '())
+      l2
+      (cons (car l1)(append (cdr l1) l2) ))
 ))
 
+
+; Signature: reverse(l1)
+; Type: List(T1) -> List(T1)
+; Purpose: Reverse the elements of a list
+; Pre-conditions:l1 is a list 
+; Tests:(reverse '(1 2 3)) ; Expected: '(3 2 1)
+; (reverse '())      ; Expected: '()
+; (reverse '(a b c)) ; Expected: '(c b a)
 (define reverse
-    (lambda (l)
-    @todo
+  (lambda (l1)
+    (if (eq? l1 '())
+      '()
+      (append (reverse (cdr l1)) (cons (car l1) '()))
+)))
+
+; Signature: dup-helper (l j i)
+; Type: [List(T1)*number*number]-> List(T1)
+; Purpose: Duplicate the first element of a list j times.
+; Pre-conditions: l is a non-empty list, j and i are numbers and j >= i.
+; Tests:(dup-helper '(a) 3 0) ; Expected: '(a a a)
+; (dup-helper '(b) 1 0) ; Expected: '(b)
+; (dup-helper '(c) 0 0) ; Expected: '()
+(define dup-helper
+  (lambda (l j i)
+    (if (= j i)
+        '()
+        (cons (car l) (dup-helper l j (+ i 1))))
 ))
 
+; Signature:duplicate-items(lst dup-count)
+; Type:[List(T1)*List(number)] -> List(T1)
+; Purpose: Duplicate each item in lst according to the corresponding count in dup-count
+; Pre-conditions: dup-count is a list of numbers, lst is a list 
+; Tests:(duplicate-items '(a b c) '(2 3 1)) ; Expected: '(a a b b b c)
+; (duplicate-items '(x y) '(1 2))     ; Expected: '(x y y)
+; (duplicate-items '() '())           ; Expected: '()
+; (duplicate-items '(a b) '(0 1))     ; Expected: '(b)
 (define duplicate-items
-    (lambda (lst, dup-count)
-    @todo    
+  (lambda (lst dup-count)
+    (if (or (eq? lst '()))
+        '()
+        (append
+         (dup-helper (list (car lst)) (car dup-count) 0)
+         (duplicate-items (cdr lst) (append (cdr dup-count) (list(car dup-count))))))
 ))
