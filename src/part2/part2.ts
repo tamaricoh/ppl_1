@@ -18,19 +18,40 @@ export const countVowels: (str: string) => number = (str) => {
 };
 
 /* Question 2 */
-const katlan: (num: number, ch: string) => number = (num, ch) => {
-  return R.includes(ch, "({[") ? num + 1 : num > 0 ? num - 1 : 0.25;
+
+const nextToClose = (ch: string): string => {
+  switch (ch) {
+    case ")":
+      return "(";
+    case "]":
+      return "[";
+    case "}":
+      return "{";
+    default:
+      return "";
+  }
 };
-export const isPaired: (str: string) => boolean = (str) => {
+
+const processChar = (stack: string[], ch: string): string[] => {
+  if (R.includes(ch, "([{")) {
+    return R.append(ch, stack); // if parentheses were open - save the type
+  } else if (R.includes(ch, ")]}")) {
+    // if close
+    if (R.isEmpty(stack) || R.last(stack) !== nextToClose(ch)) {
+      // check if its the type that needs to be
+      return R.append("-1", stack);
+    } else {
+      return R.init(stack); // if close succ - remove the last type we opened
+    }
+  } else {
+    return stack; // ignore
+  }
+};
+
+export const isPaired = (str: string): boolean => {
   const arr = stringToArray(str);
-  const type1 = R.filter((ch) => R.includes(ch, "[]"), arr);
-  const type2 = R.filter((ch) => R.includes(ch, "()"), arr);
-  const type3 = R.filter((ch) => R.includes(ch, "{}"), arr);
-  return (
-    R.reduce(katlan, 0, type1) === 0 &&
-    R.reduce(katlan, 0, type2) === 0 &&
-    R.reduce(katlan, 0, type3) === 0
-  );
+  const stack = R.reduce(processChar, [], arr);
+  return R.isEmpty(stack); // ensure stack is empty if all parentheses are paired correctly
 };
 
 /* Question 3 */
@@ -40,12 +61,9 @@ export type WordTree = {
 };
 
 const preorderTraversal = (node: WordTree | null): string[] =>
-  node
-      ? [node.root, " ", ...R.chain(preorderTraversal, node.children)]
-       : [];
+  node ? [node.root, " ", ...R.chain(preorderTraversal, node.children)] : [];
 
-
-export const treeToSentence: (node: WordTree)=>string= (node)=>{
-  const arr= preorderTraversal(node);
-  return R.init(R.reduce((acc,cur)=> acc+cur,"",arr));
-}  
+export const treeToSentence: (node: WordTree) => string = (node) => {
+  const arr = preorderTraversal(node);
+  return R.init(R.reduce((acc, cur) => acc + cur, "", arr));
+};
